@@ -1,0 +1,23 @@
+name: Export PDF
+
+on:
+    push:
+      branches:
+        - master
+
+jobs:
+  convert_via_pandoc:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          mkdir output
+          cd content/docs/
+          echo "::set-env name=FILELIST::$(printf '"content/docs/%s" ' *.md)"
+      - uses: docker://pandoc/latex:2.9
+        with:
+          args: --output=output/webrtc-for-the-curios.pdf ${{ env.FILELIST }}
+      - uses: actions/upload-artifact@master
+        with:
+          name: output
+          path: output
